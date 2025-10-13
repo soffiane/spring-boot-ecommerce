@@ -19,4 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * disponible sous le endpoint : /search/findByCategoryId?id={id}&page={page}&size={size}
      */
     Page<Product> findByCategoryId(@Param("id") Long id, Pageable pageable);
+    //equivaut a like '%%' coté SQL
+    Page<Product> findByNameContaining(@Param("name") String name, Pageable pageable);
 }
