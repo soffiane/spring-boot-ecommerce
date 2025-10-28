@@ -1,6 +1,9 @@
 package com.angular.springboot.ecommerce.config;
 
+import com.angular.springboot.ecommerce.entity.Country;
 import com.angular.springboot.ecommerce.entity.Product;
+import com.angular.springboot.ecommerce.entity.ProductCategory;
+import com.angular.springboot.ecommerce.entity.State;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Type;
@@ -33,12 +36,19 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
         HttpMethod[] unsupportedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
 
-        config.getExposureConfiguration()
-                .forDomainType(Product.class)
-                .withItemExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions))
-                .withCollectionExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions));
+        disableHttpMethod(config, unsupportedActions, Product.class);
+        disableHttpMethod(config, unsupportedActions, ProductCategory.class);
+        disableHttpMethod(config, unsupportedActions, Country.class);
+        disableHttpMethod(config, unsupportedActions, State.class);
         //call an internal method to expose the ids
         exposeIds(config);
+    }
+    //on veut empecher de supprimer ou modifier des pays des produits et des categories
+    private static void disableHttpMethod(RepositoryRestConfiguration config, HttpMethod[] unsupportedActions, Class theClass) {
+        config.getExposureConfiguration()
+                .forDomainType(theClass)
+                .withItemExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions))
+                .withCollectionExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions));
     }
 
     private void exposeIds(RepositoryRestConfiguration config) {
