@@ -435,7 +435,8 @@ CREATE TABLE IF NOT EXISTS customer (
   first_name varchar(255) DEFAULT NULL,
   last_name varchar(255) DEFAULT NULL,
   email varchar(255) DEFAULT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  constraint unique_email unique (email)
 );
 
 --

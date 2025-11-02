@@ -5,18 +5,15 @@ import com.angular.springboot.ecommerce.entity.Product;
 import com.angular.springboot.ecommerce.entity.ProductCategory;
 import com.angular.springboot.ecommerce.entity.State;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.Type;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * On va creer une configuration pour empecher la creation ou la suppression de produits
@@ -25,7 +22,10 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
+    @Value("${allowed.origins}")
+    private String[] origins;
 
     @Autowired
     public MyDataRestConfig(EntityManager entityManager) {
@@ -34,7 +34,7 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
-        HttpMethod[] unsupportedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
+        HttpMethod[] unsupportedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH};
 
         disableHttpMethod(config, unsupportedActions, Product.class);
         disableHttpMethod(config, unsupportedActions, ProductCategory.class);
@@ -42,13 +42,16 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethod(config, unsupportedActions, State.class);
         //call an internal method to expose the ids
         exposeIds(config);
+        //autorise le cross origin pour nos endpoints - on peut retirer l'annotation dans le controller et les repository
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(origins);
     }
+
     //on veut empecher de supprimer ou modifier des pays des produits et des categories
     private static void disableHttpMethod(RepositoryRestConfiguration config, HttpMethod[] unsupportedActions, Class theClass) {
         config.getExposureConfiguration()
                 .forDomainType(theClass)
-                .withItemExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions))
-                .withCollectionExposure((metadata,httpMethod) -> httpMethod.disable(unsupportedActions));
+                .withItemExposure((metadata, httpMethod) -> httpMethod.disable(unsupportedActions))
+                .withCollectionExposure((metadata, httpMethod) -> httpMethod.disable(unsupportedActions));
     }
 
     private void exposeIds(RepositoryRestConfiguration config) {
