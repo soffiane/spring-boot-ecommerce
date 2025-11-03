@@ -21,7 +21,7 @@ public class Order {
     private Long id;
 
     @Column(name = "order_tracking_number")
-    private String orderTrackingNimber;
+    private String orderTrackingNumber;
 
     @Column(name = "total_price")
     private BigDecimal totalPrice;

@@ -1,14 +1,10 @@
 package com.angular.springboot.ecommerce.config;
 
-import com.angular.springboot.ecommerce.entity.Country;
-import com.angular.springboot.ecommerce.entity.Product;
-import com.angular.springboot.ecommerce.entity.ProductCategory;
-import com.angular.springboot.ecommerce.entity.State;
+import com.angular.springboot.ecommerce.entity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -40,6 +36,7 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethod(config, unsupportedActions, ProductCategory.class);
         disableHttpMethod(config, unsupportedActions, Country.class);
         disableHttpMethod(config, unsupportedActions, State.class);
+        disableHttpMethod(config, unsupportedActions, Order.class);
         //call an internal method to expose the ids
         exposeIds(config);
         //autorise le cross origin pour nos endpoints - on peut retirer l'annotation dans le controller et les repository
