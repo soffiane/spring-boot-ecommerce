@@ -73,6 +73,11 @@
             <artifactId>okta-spring-boot-starter</artifactId>
             <version>3.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>30.0.0</version>
+        </dependency>
 	</dependencies>
 
 	<build>

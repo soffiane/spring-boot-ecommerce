@@ -1,8 +1,12 @@
 package com.angular.springboot.ecommerce.controller;
 
+import com.angular.springboot.ecommerce.dto.PaymentInfo;
 import com.angular.springboot.ecommerce.dto.Purchase;
 import com.angular.springboot.ecommerce.dto.PurchaseResponse;
 import com.angular.springboot.ecommerce.service.CheckoutService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,5 +23,15 @@ public class CheckoutController {
     @PostMapping("/purchase")
     public PurchaseResponse placeOrder(@RequestBody Purchase purchase) {
         return checkoutService.placeOrder(purchase);
+    }
+
+    @PostMapping("/payment-intent")
+    public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentInfo paymentInfo) {
+        try {
+            PaymentIntent paymentIntent = checkoutService.createPaymentIntent(paymentInfo);
+            return ResponseEntity.ok(paymentIntent.toJson());
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().body("Error creating payment intent: " + e.getMessage());
+        }
     }
 }
